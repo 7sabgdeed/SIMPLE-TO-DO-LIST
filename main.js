@@ -8,20 +8,35 @@ let nextAvailableTaskId = 1;
 
 
 
-function toggleTaskIsCheckedValueInLocalStorage (taskDiv) {
+function addANewTaskToLocalStorage (taskDiv) {
+
+    let taskId = taskDiv.id;
+    let taskValue = taskDiv.children[1].value;
+
+    let myTaskObject = {isChecked: false, value: taskValue};
+    let myTaskObjectJSON = JSON.stringify(myTaskObject);
+    
+    window.localStorage.setItem(taskId, myTaskObjectJSON);
+    window.localStorage.setItem("nextAvailableTaskId", nextAvailableTaskId);
+}
+
+
+
+function removeTaskFromLocalStorage (taskDiv) {
+
+    let taskId = taskDiv.id;
+    window.localStorage.removeItem(taskId);
+}
+
+
+
+function updateTaskIsCheckedValueInLocalStorage (taskDiv, isChecked) {
 
     let taskId = taskDiv.id;
     let taskObjectJSON = window.localStorage.getItem(taskId);
     let taskObject = JSON.parse(taskObjectJSON);
 
-    if (taskObject.isChecked === false) {
-
-        taskObject.isChecked = true;
-
-    } else {
-
-        taskObject.isChecked = false;
-    }
+    taskObject.isChecked = isChecked;
 
     let updatedTaskObjectJSON = JSON.stringify(taskObject);
     
@@ -32,11 +47,14 @@ function toggleTaskIsCheckedValueInLocalStorage (taskDiv) {
 
 function checkAndUnCheckCheckbox (checkBoxDiv) {
 
+    let isChecked = null;
+
     if (checkBoxDiv.firstElementChild.src.indexOf("not") !== -1) {
     
         checkBoxDiv.firstElementChild.src = checkBoxDiv.firstElementChild.src.replace("not-checked", "checked");
         checkBoxDiv.firstElementChild.alt = "checked-box";
         checkBoxDiv.nextElementSibling.style.textDecoration = "1.4px line-through #9adc32";
+        isChecked = true;
         // checkBoxDiv.nextElementSibling.value = ` ${checkBoxDiv.nextElementSibling.value} `;
         
     } else {
@@ -44,12 +62,13 @@ function checkAndUnCheckCheckbox (checkBoxDiv) {
         checkBoxDiv.firstElementChild.src = checkBoxDiv.firstElementChild.src.replace("checked", "not-checked");
         checkBoxDiv.firstElementChild.alt = "not-checked-box";
         checkBoxDiv.nextElementSibling.style.textDecoration = "none";
+        isChecked = false;
         // checkBoxDiv.nextElementSibling.value = checkBoxDiv.nextElementSibling.value.trim();
     }
 
     let taskDiv = checkBoxDiv.parentElement;
 
-    toggleTaskIsCheckedValueInLocalStorage(taskDiv);
+    updateTaskIsCheckedValueInLocalStorage(taskDiv, isChecked);
 }
 
 
@@ -61,27 +80,6 @@ function deleteTask (deleteButton) {
     let taskDiv = deleteButton.parentElement;
 
     removeTaskFromLocalStorage(taskDiv);
-}
-
-
-
-function addANewTaskToLocalStorage (taskDiv) {
-
-    let taskId = taskDiv.id;
-    let taskValue = taskDiv.children[1].value;
-
-    let myTaskObject = {isChecked: false, value: taskValue};
-    let myTaskObjectJSON = JSON.stringify(myTaskObject);
-    window.localStorage.setItem(taskId, myTaskObjectJSON);
-    window.localStorage.setItem("nextAvailableTaskId", nextAvailableTaskId);
-}
-
-
-
-function removeTaskFromLocalStorage (taskDiv) {
-
-    let taskId = taskDiv.id;
-    window.localStorage.removeItem(taskId);
 }
 
 
@@ -124,21 +122,15 @@ function createATaskDivAndAddItToTheTasksContainer (isItNew, taskName, taskDivId
     if (isItNew) {
         
         eachTask.id = `task-${nextAvailableTaskId}`;
-        customCheckBoxDiv.id = `task-${nextAvailableTaskId}-custom-checkbox`;
         
         checkBoxImage.src = "./pics/not-checked.png";
         checkBoxImage.alt = "not-checked-box";
-        
-        taskNameInput.id = `task-${nextAvailableTaskId}-input`;
-        
-        deleteButton.id = `task-${nextAvailableTaskId}-remove-button`;
         
         nextAvailableTaskId++;
 
     } else {
         
         eachTask.id = taskDivId;
-        customCheckBoxDiv.id = `${taskDivId}-custom-checkbox`;
         
         
         if (isTaskChecked) {
@@ -153,10 +145,6 @@ function createATaskDivAndAddItToTheTasksContainer (isItNew, taskName, taskDivId
             checkBoxImage.alt = "not-checked-box";
             taskNameInput.style.textDecoration = "none";
         }
-        
-        taskNameInput.id = `${taskDivId}-input`;
-        
-        deleteButton.id = `${taskDivId}-remove-button`;
     }
 
     
@@ -189,9 +177,10 @@ function createATaskDivAndAddItToTheTasksContainer (isItNew, taskName, taskDivId
         }
     });
 
+    
     taskNameInput.addEventListener("blur", function () {
 
-        let newTaskInputValue = this.value;
+        let newTaskInputValue = this.value.trim();
         let taskDiv = this.parentElement;
 
         updateTaskValueInLocalStorage(taskDiv, newTaskInputValue);
@@ -214,9 +203,6 @@ addTaskButton.addEventListener("click", _ => {
         createATaskDivAndAddItToTheTasksContainer(isItNew, taskName, taskDivId, isTaskChecked);
     }
 });
-
-
-// localStorage.clear();
 
 
 
