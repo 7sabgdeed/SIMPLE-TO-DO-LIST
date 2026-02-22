@@ -1,3 +1,6 @@
+"use strict";
+
+
 let addTaskInput = document.querySelector(`[name="add-task-input"]`);
 let addTaskButton = document.querySelector("#add-task-button");
 let tasksContainer = document.querySelector("#tasks-container");
@@ -99,7 +102,7 @@ function updateTaskValueInLocalStorage (taskDiv, newValue) {
 
 
 
-function createTaskDivAndAddItToTasksContainer (isItNew, taskName, taskDivId, isTaskChecked) {
+function createATaskDivAndAddItToTheTasksContainer (isItNew, taskName, taskDivId, isTaskChecked) {
 
     let eachTask = document.createElement("div");
     eachTask.className = "each-task";
@@ -112,7 +115,7 @@ function createTaskDivAndAddItToTasksContainer (isItNew, taskName, taskDivId, is
     let taskNameInput = document.createElement("input");
     taskNameInput.type = "text";
     taskNameInput.name = "task-name";
-    taskNameInput.value = taskName
+    taskNameInput.value = taskName;
     
     let deleteButton = document.createElement("button");
     deleteButton.textContent = "X";
@@ -208,20 +211,12 @@ addTaskButton.addEventListener("click", _ => {
         let taskDivId = null;
         let isTaskChecked = null;
 
-        createTaskDivAndAddItToTasksContainer(isItNew, taskName, taskDivId, isTaskChecked);
+        createATaskDivAndAddItToTheTasksContainer(isItNew, taskName, taskDivId, isTaskChecked);
     }
 });
 
 
 // localStorage.clear();
-
-
-if (window.localStorage.getItem("nextAvailableTaskId") !== null) {
-
-    nextAvailableTaskId = window.localStorage.getItem("nextAvailableTaskId");
-    
-    displayTasksOnLocalStorage();
-} 
 
 
 
@@ -247,6 +242,15 @@ function displayTasksOnLocalStorage () {
         let isTaskChecked = taskObject.isChecked;
 
 
-        createTaskDivAndAddItToTasksContainer(isItNew, taskName, taskDivId, isTaskChecked);
+        createATaskDivAndAddItToTheTasksContainer(isItNew, taskName, taskDivId, isTaskChecked);
     }
+}
+
+
+
+if (window.localStorage.getItem("nextAvailableTaskId") !== null) {
+
+    nextAvailableTaskId = window.localStorage.getItem("nextAvailableTaskId");
+    
+    displayTasksOnLocalStorage();
 }
