@@ -171,7 +171,7 @@ function createATaskDivAndAddItToTheTasksContainer (isItNew, taskName, taskDivId
 
         deleteTask(this);
 
-        if (window.localStorage.length === 1) {
+        if (window.localStorage.length === 1 && window.localStorage.getItem("nextAvailableTaskId") !== null) {
 
             window.localStorage.clear();
         }
